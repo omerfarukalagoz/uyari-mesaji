@@ -1,0 +1,101 @@
+package com.omerfaruk.uyarimesaji;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText editNumberText;
+    TextView textView;
+    SharedPreferences sharedPreferences;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Toast.makeText(MainActivity.this,"Toast Message",Toast.LENGTH_LONG).show();  //altta süreli çıkan mesaj
+
+        editNumberText = findViewById(R.id.editText);
+        textView = findViewById(R.id.textView2);
+        sharedPreferences = this.getSharedPreferences("com.omerfaruk.uyarimesaji", Context.MODE_PRIVATE);
+
+        int storedAge = sharedPreferences.getInt("stored Age",0);   //veri kaydetme
+        if(storedAge != 0){
+            textView.setText("Your Age :"+ storedAge);
+        }else{
+            textView.setText("Your Age :");
+        }
+
+
+
+    }
+
+    public void save(View view){     //save butonuna tıkladığımızda
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this/*getapplicationcontext*/);    //alert butonu kurma.
+
+        alert.setTitle("save");  //alert başlığı
+        alert.setMessage("Are You Sure?");  //alert mesajı
+        alert.setPositiveButton("yes", new DialogInterface.OnClickListener() {  //yes e basarsan olacaklar buanın içinde
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                if(!editNumberText.getText().toString().matches("")){
+                    int age = Integer.parseInt(editNumberText.getText().toString());
+                    textView.setText("Your Age : " + age);
+                    sharedPreferences.edit().putInt("stored Age",age).apply();
+                    Toast.makeText(MainActivity.this,"Saved",Toast.LENGTH_LONG).show();
+                }else{
+                    textView.setText("Your Age :");
+                }
+            }
+        });
+
+        alert.setNegativeButton("no", new DialogInterface.OnClickListener() {   //no ya basarsan olacaklar buranın içinde
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(MainActivity.this,"Not Saved",Toast.LENGTH_LONG).show();
+            }
+        });
+
+        alert.show();  //alerti göster!!
+
+    }
+
+    public void delete(View view){   //delete butonuna basarsan olacaklar
+
+        int storedData = sharedPreferences.getInt("stored Age",0);
+        if(storedData != 0){
+            sharedPreferences.edit().remove("stored Age").apply();
+            textView.setText("Your age :");
+        }
+
+    }
+
+
+}
+
+
+/*
+
+     projemizde kullanıcıya bazı mesajlar göstermek isteyebiliriz. bir onceki projede veri (yaş) kaydediyorduk.
+     bu projeye butona bastığımızda "kaydetmek istediğne emin misin?" yes ve no tuşu çıkacak şekilde  bir uyarı mesajı göndermeyi öğrenecez...
+
+     context?(bağlam)  --  android projemiz içinde ne oluyor kim kimle iletişime geçiyor..
+
+     context
+     1- activity context  --   this veya mainactivitythis ile laşabiliriz.
+     2- app context  --  getapplicationcontext ile ulaşabiliriz.
+
+     this referans olarak bir üst sınfı tutar!!!
+
